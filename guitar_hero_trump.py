@@ -5,20 +5,35 @@ import random
 pygame.mixer.init()
 
 pygame.mixer.music.load("audio/song.wav")
-pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)
 
+america_great = pygame.mixer.Sound("audio/america_great_again.wav")
+america_great.set_volume(0.3)
+
+great_wall = pygame.mixer.Sound("audio/great_wall.wav")
+great_wall.set_volume(1)
+
+great_great_wall = pygame.mixer.Sound("audio/great_great_wall.wav")
+great_great_wall.set_volume(1)
+
 def Keyboard(event):
+    global x,y,r,head,test,america_great,great_wall
+    Canevas.delete(head)
     key = event.char
     key = key.lower()
     if key == 'a' or key == 'q':
-        print key
+        if test == 0 and y>=422 and y<=497:
+            great_wall.play()
+
 
     elif key == 'z' or key == 'w':
-        print key
+        if test == 1 and y>=422 and y<=497:
+            america_great.play()
 
     elif key == 'e':
-        print key
+        if test == 2 and y>=422 and y<=497:
+            great_great_wall.play()
 
     ball_creation()
 
@@ -92,6 +107,7 @@ Canevas.create_image(0,0,anchor=NW, image=back)
 
 line()
 main()
+ball_creation()
 
 Canevas.pack()
 
