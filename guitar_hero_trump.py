@@ -2,6 +2,7 @@ from Tkinter import *
 import pygame
 import random
 import tkFont
+import tkMessageBox
 
 pygame.mixer.init()
 
@@ -24,11 +25,28 @@ youre_fired.set_volume(15)
 what_the_hell = pygame.mixer.Sound("audio/what_the_hell.wav")
 what_the_hell.set_volume(5)
 
+def restart():
+    global test,r,y,score,testa,mov,speed,faill,size,scoretext
+    pygame.mixer.music.play(-1)
+    test = 3
+    r = 0
+    y = 0
+    score = 0
+    testa = 0
+    mov = 2
+    speed = 1
+    faill = 0
+
+    Canevas.create_image(0,0,anchor=NW, image=back)
+
+    scoretext = Canevas.create_text(333,60,anchor=CENTER,text=str(score),width=100,font=size)
+
 def Keyboard(event):
     global x,y,r,head,test,america_great,great_wall,score,size,scoretext,putx,puty,itemputin,putin,speed
     Canevas.delete(head)
     key = event.char
     key = key.lower()
+
     if key == 'a' or key == 'q':
         if test == 0 and y>=422 and y<=497:
             great_wall.play()
@@ -67,22 +85,63 @@ def Keyboard(event):
     ball_creation()
 
 def error():
-    global score,speed
+    global score,speed,faill
     score-=1
+
     if score<0:
         score=0
+
     rand = random.randint(0,1)
+
     if rand == 0:
         youre_fired.play()
 
     else:
         what_the_hell.play()
 
+    faill+=1
+    Heart()
+
+def Heart():
+    global faill,heart,dead,heartitem,heartitem1,heartitem2,speed,scoretext
+
+    Canevas.delete(scoretext)
+    scoretext = Canevas.create_text(333,60,anchor=CENTER,text=str(score),width=100,font=size)
+
+    if faill == 1:
+        Canevas.delete(heartitem)
+        heartitem = Canevas.create_image(667,0,anchor=NE, image=dead)
+
+    elif faill == 2:
+        Canevas.delete(heartitem1)
+        heartitem1 = Canevas.create_image(627,0,anchor=NE, image=dead)
+
+    elif faill == 3:
+        Canevas.delete(heartitem2)
+        heartitem2 = Canevas.create_image(587,0,anchor=NE, image=dead)
+        speed = 0
+        Gameover()
+
+def Gameover():
+    tkMessageBox.showwarning('GUITAR HERO TRUMP','Score : '+str(score)+'\n\n!!!!!GAME OVER !!!!!')
+    go = tkMessageBox.askyesno('GAME OVER','Do you want to restart the game ?')
+
+    if go == True:
+        Canevas.delete(ALL)
+        pygame.mixer.music.stop()
+        restart()
+        line()
+
+    else:
+        root.quit()
+
+
 def ball_creation():
     global x,y,r,head,test
     test=random.randint(0,2)
-    r=10
-    y=100
+    r = 10
+    y = 100
+
     if test == 0:
         x = 300
 
@@ -99,6 +158,7 @@ def putine():
     Canevas.delete(itemputin)
     putx-=mov
     itemputin = Canevas.create_image(putx,puty,anchor=CENTER, image=putin)
+
     if putx >- 150 and mov>0:
         root.after(5,putine)
 
@@ -109,11 +169,11 @@ def putine():
         mov = -mov
         if testa == 0:
             putin = PhotoImage(file="pictures/putin_bear1.gif")
-            testa=1
+            testa = 1
 
         else:
             putin = PhotoImage(file="pictures/putin_bear.gif")
-            testa=0
+            testa = 0
 
 
 
@@ -122,6 +182,7 @@ def putine():
 def main():
     global x,y,r,head,test,scoretext,speed
     y+=speed
+
     if test == 0:
         r+=0.08*speed
         x-=0.18*speed
@@ -139,8 +200,10 @@ def main():
     if y > 550:
         error()
         Canevas.delete(scoretext)
+
         scoretext = Canevas.create_text(333,60,anchor=CENTER,text=str(score),width=100,font=size)
         Canevas.delete(head)
+
         ball_creation()
 
     root.after(10,main)
@@ -148,7 +211,8 @@ def main():
 
 
 def line():
-    global trump1,trump2,trump3
+    global trump1,trump2,trump3,heart,dead,heartitem,heartitem1,heartitem2
+
     Canevas.create_line(290,100,180,475,width=10,fill='Firebrick')
     Canevas.create_image(235,460,anchor=CENTER, image=trump1)
     Canevas.create_line(320,100,280,475,width=10,fill='Orange Red')
@@ -157,22 +221,30 @@ def line():
     Canevas.create_image(425,460,anchor=CENTER, image=trump3)
     Canevas.create_line(380,100,480,475,width=10,fill='Royal Blue')
 
+    heart = PhotoImage (file="pictures/heart1.gif")
+    dead = PhotoImage (file="pictures/over1.gif")
+
+    heartitem = Canevas.create_image(667,0,anchor=NE, image=heart)
+    heartitem1 = Canevas.create_image(627,0,anchor=NE, image=heart)
+    heartitem2 = Canevas.create_image(587,0,anchor=NE, image=heart)
+
 
 
 test = 3
-r=0
-y=0
-score=0
-putx=750
-puty=450
-testa=0
-mov=2
-speed=1
+r = 0
+y = 0
+score = 0
+putx = 750
+puty = 450
+testa = 0
+mov = 2
+speed = 1
+faill = 0
 
 root = Tk()
 root.title('GUITAR HERO TRUMP')
 
-Canevas = Canvas(root, width = 667, height =500, bg='Black')
+Canevas = Canvas(root, width=667, height=500, bg='Black')
 Canevas.focus_set()
 Canevas.bind('<Key>',Keyboard)
 
@@ -181,6 +253,7 @@ trump1 = PhotoImage(file="pictures/trump0.gif")
 trump2 = PhotoImage(file="pictures/trump1.gif")
 trump3 = PhotoImage(file="pictures/trump2.gif")
 putin = PhotoImage(file="pictures/putin_bear.gif")
+
 Canevas.create_image(0,0,anchor=NW, image=back)
 
 size = tkFont.Font(size=50)
